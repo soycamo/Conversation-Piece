@@ -32,7 +32,7 @@ void loop() {
     digitalWrite(Switch, HIGH);
   }
   else if((digitalRead(aHear) && digitalRead(bHear)) || (digitalRead(aTalk) && digitalRead(bTalk))){
-    (last_listener == 'a') ? digitalWrite(Switch, HIGH) : digitalWrite(Switch, LOW);
+    (last_listener == 'a') ? digitalWrite(Switch, LOW) : digitalWrite(Switch, HIGH);
   }
   else{
     // Uhh.  
