@@ -1,5 +1,5 @@
 // Tin can A
-# Written by Cameron Adamez under a BSD license.
+/* Written by Cameron Adamez under a BSD license. */
 #define aTalk 2
 #define aHear 3
 // Tin can B
