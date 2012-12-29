@@ -3,6 +3,7 @@
 // Tin can A
 #define aTalk 2
 #define aHear 3
+
 // Tin can B
 #define bTalk 4
 #define bHear 5
@@ -19,23 +20,18 @@ void setup() {
   pinMode(bHear, INPUT);
   pinMode(ledPin, OUTPUT);
   pinMode(Switch, OUTPUT);
-  
 }
 
 void loop() {
-
   int a_state = determineCanState(aTalk, aHear);
   int b_state = determineCanState(bTalk, bHear);
 
   if (a_state == b_state) {
     if (listener_log == 'a') { 
-      digitalWrite(ledPin, LOW);
-      digitalWrite(Switch, LOW);
+      setSpeakingCan('b');
     }
-    else {
-      digitalWrite(ledPin, HIGH);
-      digitalWrite(Switch, HIGH);
-    }
+    else setSpeakingCan('a');
+ 
   }
   else {
     // To turn A on, switch is pulled HIGH.
@@ -43,21 +39,16 @@ void loop() {
     // By turning it on, it will talk.
     // I think, at least. I should probably reverse this logic?
 
-    // A is talking, or B is listening and A is ???
+    // A is talking, or B is listening and A is drooling a little 
     if ((a_state == 1) || (a_state == 0 && b_state == 2)) { 
-      listener_log = 'b'; 
-      digitalWrite(ledPin, HIGH);
-      digitalWrite(Switch, HIGH);
+      setSpeakingCan('a');
+
     }
     // B is talking, or A is listening and B is staring at nothing 
     else if ((b_state == 1) || (b_state == 0 && a_state == 2)) {
-      listener_log = 'a'; 
-      digitalWrite(ledPin, LOW);
-      digitalWrite(Switch, LOW);
+      setSpeakingCan('b');
     }
-
   }
-
 }
 
 /*
@@ -81,4 +72,18 @@ int determineCanState(int talkPin, int hearPin) {
     if (talkState) return 1;
     else return 2;
   }
+}
+
+void setSpeakingCan(char can) {
+  if (can == 'a') {
+    listener_log = 'b'; 
+    digitalWrite(ledPin, HIGH);
+    digitalWrite(Switch, HIGH);
+  }
+  else if (can == 'b') {
+    listener_log = 'a'; 
+    digitalWrite(ledPin, LOW);
+    digitalWrite(Switch, LOW);
+  }
+  return;
 }
