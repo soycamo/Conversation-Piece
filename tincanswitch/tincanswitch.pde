@@ -10,6 +10,8 @@
 #define ledPin 13 // onboard LED
 #define Switch 7
 
+char listener_log; // keeps track of last listener if state is indeterminate
+
 void setup() {
   pinMode(aTalk, INPUT);
   pinMode(aHear, INPUT);
@@ -20,53 +22,42 @@ void setup() {
   
 }
 
-char[100] listener_log;
-
 void loop() {
 
   int a_state = determineCanState(aTalk, aHear);
   int b_state = determineCanState(bTalk, bHear);
 
   if (a_state == b_state) {
-    // give priority to last listener.
-  }
-  else {
-
-    0 + 1 // can s
-    0 + 2 //
-    1 + 2 // this state needs to distinguish
-
-    // To turn A on, switch is pulled HIGH.
-    // To turn B on, switch is pulled LOW.
-    // By turning it on, it will talk.
-    if ((a_state == 1) || (a_state == 0 && b_state == 2)) { 
+    if (listener_log == 'a') { 
+      digitalWrite(ledPin, LOW);
+      digitalWrite(Switch, LOW);
+    }
+    else {
       digitalWrite(ledPin, HIGH);
       digitalWrite(Switch, HIGH);
     }
+  }
+  else {
+    // To turn A on, switch is pulled HIGH.
+    // To turn B on, switch is pulled LOW.
+    // By turning it on, it will talk.
+    // I think, at least. I should probably reverse this logic?
+
+    // A is talking, or B is listening and A is ???
+    if ((a_state == 1) || (a_state == 0 && b_state == 2)) { 
+      listener_log = 'b'; 
+      digitalWrite(ledPin, HIGH);
+      digitalWrite(Switch, HIGH);
+    }
+    // B is talking, or A is listening and B is staring at nothing 
     else if ((b_state == 1) || (b_state == 0 && a_state == 2)) {
+      listener_log = 'a'; 
       digitalWrite(ledPin, LOW);
       digitalWrite(Switch, LOW);
     }
 
   }
 
-/*
-  if((digitalRead(aHear) && digitalRead(bTalk)) || (digitalRead(aHear) && (!digitalRead(bTalk) && !digitalRead(bHear))) || (digitalRead(aHear) && (!digitalRead(bTalk) && !digitalRead(bHear)))) {
-    last_listener = 'a';
-    digitalWrite(Switch, LOW);
-  }
-  else if(digitalRead(aTalk) && digitalRead(bHear)){
-    last_listener = 'b';
-    digitalWrite(Switch, HIGH);
-  }
-  else if((digitalRead(aHear) && digitalRead(bHear)) || (digitalRead(aTalk) && digitalRead(bTalk))){
-    (last_listener == 'a') ? digitalWrite(Switch, LOW) : digitalWrite(Switch, HIGH);
-  }
-  else{
-    // Uhh.  
-    digitalWrite(Switch, HIGH);
-  }
-  */
 }
 
 /*
@@ -75,7 +66,7 @@ void loop() {
     1: speaking
     2: listening
 */
-int determineCanState(talkPin, hearPin) {
+int determineCanState(int talkPin, int hearPin) {
   bool talkState = digitalRead(talkPin);
   bool hearState = digitalRead(hearPin);
   // if talkState is true and hearState is true, return 0.
